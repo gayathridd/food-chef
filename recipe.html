@@ -1,0 +1,172 @@
+<html>
+	<head>
+	<title>Recipe </title>
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<!-- 	 -->
+		<!-- CSS only -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+<!-- JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+	</head>
+	<style>
+		.card{
+			background-color:#212121;
+			color: white;
+		}
+		.img-mod {
+		  display: block;
+		  margin-left: auto;
+		  margin-right: auto;
+		  width:75%;
+		}
+	</style>
+	<body>
+		<script type="text/javascript">
+	var currentid=0;      // assign global numerical value to track the current meal
+	var currentlength=0;  // assign global numerical value for number of meals
+	
+	/**
+	*Initialize and invoke a fetcher function to gather and 
+	*display the meals based on the category 
+	*/
+
+	function fetcher(query){
+			var ids=[];
+			$('#myModalLabel').text(query);
+			$.get("https://www.themealdb.com/api/json/v1/1/filter.php?c="+query+"",(data) => {
+				$.each(data,(index,el)=>{ //for loop that runs for numer of meals
+					$.each(el,(i,d)=>{
+
+						ids.push(d.idMeal);  //array holds the numerical value for meal id
+					})
+					$('.modal-body').empty(); //To empty the modal content for each query
+					var counter=0;
+					currentlength=ids.length;
+					currentid=0;
+					$.each(ids,(index,element) => { //for loop runs for each meal that belongs to the id from array ids.
+
+						$.get("https://www.themealdb.com/api/json/v1/1/lookup.php?i="+element+"",(data) => {
+							
+							$.each(data,(ids,dl) => {
+								if(counter==0){
+									var b='<div class=\"modal-split\" id=\"mid'+counter+'\" style=\"display:block\">';
+								}
+								else{
+									var b='<div class=\"modal-split\" id=\"mid'+counter+'\" style=\"display:none\">';  //controller method for keeping one meal active on modal
+								}
+								var htext='<h1>'+dl[0].strMeal+'</h1>';
+								var img='<img class=\"img-mod\" src=\"'+dl[0].strMealThumb+'\"/>';  //image for the meal
+								var vid='<a href=\"'+dl[0].strYoutube+'\" style=\"margin:8px\" class=\"btn btn-info btn-lg\"><span class=\"glyphicon glyphicon-film\"/>\
+								Youtube</a>'; //video link for preparing food.
+								var ing='<div><ul>';
+								for(i=1;i<=20;i++){  //for loop runs twenty times to gather the ingredients for the meal items
+									var temp="strIngredient"+i.toString();
+									var temp2="strMeasure"+i.toString();
+									if(dl[0][temp] !== null){
+										console.log(dl[0][temp],dl[0][temp2]);
+										if(dl[0][temp]!==""){
+										ing=ing+'<li>'+dl[0][temp]+"     "+dl[0][temp2]+'</li>';
+										}
+									}
+								}
+								ing=ing+'</ul></div>'
+								var co='<p>'+dl[0].strInstructions+'</p></div>';
+								$('.modal-body').append(b+htext+img+vid+ing+co);
+								counter=counter+1;
+							});
+
+							
+						});
+					});
+				})
+			});
+		}
+	$(document).ready(() => {
+
+		$.get("https://www.themealdb.com/api/json/v1/1/categories.php",(data)=>{
+
+			$.each(data,(index,element) => { //for loop runs for all categories of meal
+				$.each(element,(i,d)=>{
+					var root='<div class=\"card float-left\" style=\"width: 18rem;margin: 10px;\">';
+					var root1='<div class=\"card\"><div class=\"card_image\">';
+					var img1='<img src=\"'+d.strCategoryThumb+'\"></div>';
+					var content='<div class=\"card_content\"><h4>'+d.strCategory+'</h4><p>'+d.strCategoryDescription+'</p></div>';
+					var cb='<div class=\"card_buttons\"><a href=\"#\">view more</a></div></div>';
+					// console.log(d);
+					var img='<img class=\"card-img-top\" src=\"'+d.strCategoryThumb+'\" alt=\"Card image cap\">';
+					var body='<div class=\"card-body\"><h5 class=\"card-title\">'+d.strCategory+'</h5><p class=\"card-text\">'+d.strCategoryDescription+' <a href=\"#\" class=\"btn btn-primary\"  onClick=\"fetcher(\''+d.strCategory+'\')\" data-toggle="modal" data-target="#myModal">view more</a></div>';
+					$('.card_group').append(root+img+body);
+				})
+			});
+		});
+
+	});
+
+
+/**
+	*Initialize and invoke a controller function to display the 
+	*appropriate meal based on the input from button selection
+*/
+
+ function controller(bt){
+ 	$('#mid'+currentid).css("display","none");  //hide the current meal
+ 	if(bt=='prev'){
+ 		currentid=(currentid-1);
+ 		if(currentid<0){
+ 			currentid=currentlength-1;
+ 		}
+ 		$('#mid'+currentid).css("display","block"); //display the previous meal
+ 	}
+ 	else
+ 	{
+ 		currentid=(currentid+1)%currentlength;
+ 		$('#mid'+currentid).css("display","block"); //display the next meal
+ 	}
+ }
+
+ /**
+ * Initialize and invoke a erase function to hide the 
+ * display of meals after the close button. 
+ */
+
+ function erase(){
+ 	$('#mid'+currentid).css("display","none");
+
+ }
+
+</script>
+		<h2>RECIPE's</h2>
+		<div id="wrapper">
+			<div class="card_group">
+				
+			</div>
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+				<div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+				    
+				    <div class="modal-content">
+				      <div class="modal-header">
+				       
+				        <h4 class="modal-title" id="myModalLabel"></h4>
+				      
+				      </div>
+				      
+				      <div class="modal-body">
+					  
+
+				      </div>
+
+				      <div class="modal-footer">
+				 		<button type="button" class="btn btn-default btn-prev" onClick="controller('prev')">Prev</button>
+            			<button type="button" class="btn btn-default btn-next" onClick="controller('Next')">Next</button>
+            			<button type="button" class="btn btn-default" data-dismiss="modal" onClick="erase()">Close</button>
+				      </div>
+				    </div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

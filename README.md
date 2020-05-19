@@ -1,1 +1,1 @@
-# food-chef
+This is a repository for the food app. It is a single page web application. Download the repository and open the index.html to access the website.

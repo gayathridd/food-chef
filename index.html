@@ -1,0 +1,41 @@
+ <html>
+ <head>
+	<title>Food Website Design</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="stylesheet" href="styel.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+	<div class="hero">
+	<div class="nav-bar">
+		<div class="nav-logo">
+			<img src="logoo.jpg">
+		</div>
+			<div class="nav-links" id=nav-links>
+			<i class="fa fa-close"onclick="closeMenu"></i>
+				<ul>
+					<a href="#"><li>HOME</li></a>
+					
+					<a href="recipe.html"><li>RECIPE</li></a>  <!-- link to the Recipe web site -->
+				</ul>
+				
+			</div>
+	</div>
+	<div class="banner-title">
+		<h1>Food <span>Doesn't have <br>a religion.</span>It is a religion</h1>
+		<a class="btn" href="recipe.html">EXPLORE</a>
+	</div>
+	</div>
+	<script>
+		var show = document.getElementById("nav-links");
+		function showMenu(){
+			show.style.right="0";
+		}
+		function closeMenu(){
+			show.style.right="-200px";
+		}
+	</script>
+			
+</body>
+</html>
+  	
